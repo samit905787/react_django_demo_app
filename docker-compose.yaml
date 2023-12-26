@@ -2,6 +2,6 @@ version: '3.9'
 
 services:
   web:
-    build: .
+    image: "samit905787/react_django_demo_app:latest"
     ports:
       - "8001:8001"

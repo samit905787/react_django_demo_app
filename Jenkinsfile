@@ -1,5 +1,13 @@
 pipeline {
     agent { label "dev-server"}
+
+    environment {
+        webAppName = "Dockerserver"
+        webAppResourceGroup = "Rg-Amit"
+        dockerImage = "react_django_demo_app:latest"
+        registryCredential = "dockerHub"
+        registryName = "samit905787"
+    }
     
     stages {
         
@@ -30,11 +38,19 @@ pipeline {
                 }
             }
         }
-        stage("deploy"){
-            steps{
-                sh "docker-compose down && docker-compose up -d"
-                echo 'deployment ho gayi'
+         stage('deploy to appservice') {
+        steps {
+            withCredentials([
+            string(credentialsId: 'app-id', variable: 'username'),
+            string(credentialsId: 'tenant-id', variable: 'tenant'),
+            string(credentialsId: 'app-id-pass', variable: 'password')
+            ]) {
+            sh """
+                /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}
+                /usr/local/bin/az  webapp config container set --name react_django_demo_app --resource-group Rg-Amit  --docker-custom-image-name=samit905787/react_django_demo_app:latest
+                """
             }
         }
+    }
     }
 }

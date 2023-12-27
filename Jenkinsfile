@@ -41,9 +41,9 @@ pipeline {
          stage('deploy to appservice') {
         steps {
             withCredentials([
-            string(credentialsId: 'app-id', variable: 'username'),
-            string(credentialsId: 'tenant-id', variable: 'tenant'),
-            string(credentialsId: 'app-id-pass', variable: 'password')
+            string(credentialsId: 'app-id-1', variable: 'username'),
+            string(credentialsId: 'tenant-id-1', variable: 'tenant'),
+            string(credentialsId: 'app-id-pass-1', variable: 'password')
             ]) {
             sh """
                 /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}

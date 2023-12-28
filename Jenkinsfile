@@ -47,7 +47,7 @@ pipeline {
             ]) {
             sh """
                 /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}
-                /usr/local/bin/az  webapp config container set --name react_django_demo_app --resource-group Rg-Amit  --docker-custom-image-name=samit905787/react_django_demo_app:latest
+                /usr/local/bin/az  webapp config container set --name Dockerserver --resource-group Rg-Amit  --docker-custom-image-name=samit905787/react_django_demo_app:latest
                 """
             }
         }

@@ -38,19 +38,27 @@ pipeline {
                 }
             }
         }
-         stage('deploy to appservice') {
-        steps {
-            withCredentials([
+        stage('deploy to appservice') {
+    steps {
+        withCredentials([
             string(credentialsId: 'app-id-1', variable: 'username'),
             string(credentialsId: 'tenant-id-1', variable: 'tenant'),
             string(credentialsId: 'app-id-pass-1', variable: 'password')
-            ]) {
-            sh """
-                /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}
-                /usr/local/bin/az  webapp config container set --name Dockerserver --resource-group Rg-Amit  --docker-custom-image-name=samit905787/react_django_demo_app:latest
+        ]) {
+            script {
+                def azureCliPath = tool 'Azure_CLI'
+                def webAppName = env.webAppName
+                def webAppResourceGroup = env.webAppResourceGroup
+                def dockerImage = "${env.dockerHubUser}/react_django_demo_app:latest"
+
+                sh """
+                    $azureCliPath login --service-principal -u ${username} -p ${password} --tenant ${tenant}
+                    $azureCliPath webapp config container set --name ${webAppName} --resource-group ${webAppResourceGroup} --docker-custom-image-name=${dockerImage}
                 """
             }
         }
     }
+}
+
     }
 }

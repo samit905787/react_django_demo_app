@@ -38,27 +38,12 @@ pipeline {
                 }
             }
         }
-        stage('deploy to appservice') {
-    steps {
-        withCredentials([
-            string(credentialsId: 'app-id-1', variable: 'username'),
-            string(credentialsId: 'tenant-id-1', variable: 'tenant'),
-            string(credentialsId: 'app-id-pass-1', variable: 'password')
-        ]) {
-            script {
-                def azureCliPath = tool 'Azure_CLI'
-                def webAppName = env.webAppName
-                def webAppResourceGroup = env.webAppResourceGroup
-                def dockerImage = "${env.dockerHubUser}/react_django_demo_app:latest"
-
-                sh """
-                    $azureCliPath login --service-principal -u ${username} -p ${password} --tenant ${tenant}
-                    $azureCliPath webapp config container set --name ${webAppName} --resource-group ${webAppResourceGroup} --docker-custom-image-name=${dockerImage}
-                """
+      stage("deploy"){
+            steps{
+                sh "docker-compose down && docker-compose up -d"
+                echo 'deployment ho gayi'
             }
         }
-    }
-}
 
     }
 }

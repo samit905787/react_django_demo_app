@@ -38,12 +38,20 @@ pipeline {
                 }
             }
         }
-      stage("deploy"){
-            steps{
-                sh "docker-compose down && docker-compose up -d"
-                echo 'deployment ho gayi'
+      stage('deploy to appservice') {
+        steps {
+            withCredentials([
+            string(credentialsId: 'app-id-1', variable: 'username'),
+            string(credentialsId: 'tenant-id-1', variable: 'tenant'),
+            string(credentialsId: 'app-id-pass-1', variable: 'password')
+            ]) {
+            sh """
+                /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}
+                /usr/local/bin/az  webapp config container set --name Dockerserver --resource-group Rg-Amit  --docker-custom-image-name=samit905787/react_django_demo_app:latest
+                """
             }
         }
+    }
 
     }
 }

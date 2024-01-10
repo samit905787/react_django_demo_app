@@ -1,5 +1,5 @@
 FROM python:3.9
-WORKDIR app
+WORKDIR /app
 # Copy SSL certificate and key
 COPY /home/azureuser/dockerssl/certificate.crt /app/
 COPY /home/azureuser/dockerssl/private.key /app/

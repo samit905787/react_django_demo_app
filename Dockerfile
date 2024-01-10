@@ -7,8 +7,8 @@ COPY . /app/
 
 # Create a directory for SSL files and copy them from the host
 RUN mkdir /app/dockerssl
-COPY /home/azureuser/dockerssl/certificate.crt /app/dockerssl/
-COPY /home/azureuser/dockerssl/private.key /app/dockerssl/
+COPY dockerssl/certificate.crt /app/dockerssl/
+COPY dockerssl/private.key /app/dockerssl/
 
 # Install dependencies
 RUN pip install -r requirements.txt

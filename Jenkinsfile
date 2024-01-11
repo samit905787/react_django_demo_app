@@ -1,44 +1,39 @@
 pipeline {
-    agent { label "dev-server"}
+    agent { label "dev-server" }
 
-    environment {
-        webAppName = "Dockerserver"
-        webAppResourceGroup = "Rg-Amit"
-        dockerImage = "react_django_demo_app:latest"
-        registryCredential = "dockerHub"
-        registryName = "samit905787"
-    }
-    
     stages {
-        
-        stage("code"){
-            steps{
+        stage("code") {
+            steps {
                 git url: "https://github.com/samit905787/react_django_demo_app.git", branch: "main"
-                echo 'bhaiyya code clone ho gaya'
+                echo 'Code cloned successfully'
             }
         }
-        stage("build and test"){
-            steps{
+
+        stage("build and test") {
+            steps {
                 sh "docker build -t react_django_demo_app ."
-                echo 'code build bhi ho gaya'
+                echo 'Code built successfully'
             }
         }
-        stage("scan image"){
-            steps{
-                echo 'image scanning ho gayi'
+
+        stage("scan image") {
+            steps {
+                echo 'Image scanning completed'
             }
         }
-        stage("push"){
-            steps{
-                withCredentials([usernameColonPassword(credentialsId: 'DOCKER_REGISTRY_CREDS', variable: 'dockerHub'), string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass'), string(credentialsId: 'dockerHubUser', variable: 'dockerHubUser')]) {
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker tag react_django_demo_app:latest ${env.dockerHubUser}/react_django_demo_app:latest"
-                sh "docker push ${env.dockerHubUser}/react_django_demo_app:latest"
-                echo 'image push ho gaya'
+
+        stage("push") {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKER_REGISTRY_CREDS', variable: 'dockerHub'), string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass'), string(credentialsId: 'dockerHubUser', variable: 'dockerHubUser')]) {
+                    sh "docker login -u ${dockerHubUser} -p ${dockerHubPass}"
+                    sh "docker tag react_django_demo_app:latest ${dockerHubUser}/react_django_demo_app:latest"
+                    sh "docker push ${dockerHubUser}/react_django_demo_app:latest"
+                    echo 'Image pushed successfully'
                 }
             }
         }
-      stage('deploy to appservice') {
+
+        stage('deploy to appservice') {
             steps {
                 withCredentials([
                     string(credentialsId: 'app-id-1', variable: 'username'),
@@ -54,6 +49,5 @@ pipeline {
                 }
             }
         }
-
     }
 }

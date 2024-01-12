@@ -11,7 +11,8 @@ pipeline {
 stages {
     stage('checkout') {
         steps {
-            checkout scm
+            git url: "https://github.com/samit905787/react_django_demo_app.git", branch: "main"
+                echo 'bhaiyya code clone ho gaya'
             }
     }
 

@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     withDockerRegistry([credentialsId: 'DOCKER_REGISTRY_CREDS', url: 'https://index.docker.io/v1/']) {
-                        sh "docker login -u _json_key -p \${DOCKER_REGISTRY_CREDS} https://index.docker.io/v1/"
+                        sh "echo ${DOCKER_REGISTRY_CREDS} | docker login -u _json_key --password-stdin https://index.docker.io/v1/"
                         sh "docker tag react_django_demo_app:latest ${DOCKER_REGISTRY_CREDS}/react_django_demo_app:latest"
                         sh "docker push ${DOCKER_REGISTRY_CREDS}/react_django_demo_app:latest"
                     }
@@ -41,7 +41,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'app-id-1', usernameVariable: 'username', passwordVariable: 'password')]) {
                         withCredentials([string(credentialsId: 'tenant-id-1', variable: 'tenant')]) {
                             sh """
-                                /usr/local/bin/az login --service-principal -u \${username} -p \${password} --tenant \${tenant}
+                                echo \${password} | /usr/local/bin/az login --service-principal -u \${username} --password-stdin --tenant \${tenant}
                                 /usr/local/bin/az webapp config container set --name Dockerserver --resource-group Rg-Amit --docker-custom-image-name=samit905787/react_django_demo_app:latest
                             """
                         }

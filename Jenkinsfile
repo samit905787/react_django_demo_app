@@ -8,45 +8,48 @@ pipeline {
 	    webAppResourceGroup = 'Rg-Amit'
 	    webAppName = 'testdatadaanapp'
     }
-stage('checkout') {
+stage('Checkout') {
+    description: 'Checkout source code from the repository'
     steps {
         checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']]])
     }
 }
 
-
-    stage ('build image') {
-        steps {        
-            script {
-                dockerImage = docker.build("${registryName}:${env.BUILD_ID}")
-                }      
-            }
+stage('Build Image') {
+    description: 'Build Docker image'
+    steps {
+        script {
+            dockerImage = docker.build("${registryName}:${env.BUILD_ID}")
+        }
     }
+}
 
-    stage('push to ACR') {
-        steps{   
-            script {
-                docker.withRegistry( "http://${registryUrl}", registryCredential ) {
+stage('Push to ACR') {
+    description: 'Push Docker image to Azure Container Registry'
+    steps {
+        script {
+            docker.withRegistry("http://${registryUrl}", registryCredential) {
                 dockerImage.push()
-                }
             }
         }
     }
-    
-    stage('deploy to appservice') {
-        steps {
-            withCredentials([
+}
+
+stage('Deploy to AppService') {
+    description: 'Deploy Docker image to Azure App Service'
+    steps {
+        withCredentials([
             string(credentialsId: 'app-id-1', variable: 'username'),
             string(credentialsId: 'tenant-id-1', variable: 'tenant'),
             string(credentialsId: 'app-id-pass-1', variable: 'password')
-            ]) {
+        ]) {
             sh """
                 /usr/local/bin/az login --service-principal -u ${username} -p ${password} --tenant ${tenant}
-                /usr/local/bin/az  webapp config container set --name testdatadaanapp --resource-group Rg-Amit  --docker-custom-image-name=testdatadaanrepo.azurecr.io/react_django_demo_app:${env.BUILD_ID}
-                """
-            }
+                /usr/local/bin/az webapp config container set --name ${webAppName} --resource-group ${webAppResourceGroup} --docker-custom-image-name=${registryUrl}/${dockerImage}:${env.BUILD_ID}
+            """
         }
     }
+}
     
 }
     }

@@ -8,12 +8,12 @@ pipeline {
 	    webAppResourceGroup = 'Rg-Amit'
 	    webAppName = 'testdatadaanapp'
     }
-stages {
-    stage('checkout') {
-        steps {
-            checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']])
-            }
+stage('checkout') {
+    steps {
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']]])
     }
+}
+
 
     stage ('build image') {
         steps {        

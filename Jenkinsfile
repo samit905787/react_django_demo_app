@@ -13,8 +13,15 @@ stages {
     stage('Clean Workspace') {
     steps {
         cleanWs()
-       }
     }
+}
+
+stage('Delete Workspace') {
+    steps {
+        deleteDir()
+    }
+}
+
 
     stage('checkout') {
         steps {

@@ -10,19 +10,6 @@ pipeline {
     }
 stages {
 
-    stage('Clean Workspace') {
-    steps {
-        cleanWs()
-    }
-}
-
-stage('Delete Workspace') {
-    steps {
-        deleteDir()
-    }
-}
-
-
     stage('checkout') {
         steps {
             checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']])

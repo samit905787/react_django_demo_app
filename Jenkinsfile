@@ -25,8 +25,9 @@ pipeline {
         stage("push") {
             steps {
                 script {
-                    withDockerRegistry([credentialsId: 'DOCKER_REGISTRY_CREDS', url: 'https://index.docker.io/v1/']) {
-                        sh "echo ${DOCKER_REGISTRY_CREDS} | docker login -u _json_key --password-stdin https://index.docker.io/v1/"
+                    // Assuming 'DOCKER_REGISTRY_CREDS' is a username/password credential ID
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_REGISTRY_CREDS', variable: 'DOCKER_REGISTRY_CREDS')]) {
+                        sh "echo \${DOCKER_REGISTRY_CREDS_PASSWORD} | docker login -u \${DOCKER_REGISTRY_CREDS_USR} --password-stdin https://index.docker.io/v1/"
                         sh "docker tag react_django_demo_app:latest ${DOCKER_REGISTRY_CREDS}/react_django_demo_app:latest"
                         sh "docker push ${DOCKER_REGISTRY_CREDS}/react_django_demo_app:latest"
                     }

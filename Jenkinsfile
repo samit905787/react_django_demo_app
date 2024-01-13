@@ -9,12 +9,6 @@ pipeline {
 	    webAppName = 'testdatadaanapp'
     }
 stages {
-
-    stage('Clean Workspace') {
-    steps {
-        cleanWs()
-    }
-}
    
     stage('Set Workspace') {
     steps {

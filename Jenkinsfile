@@ -9,14 +9,6 @@ pipeline {
 	    webAppName = 'testdatadaanapp'
     }
 stages {
-   
-    stage('Set Workspace') {
-    steps {
-        dir('/var/lib/jenkins/workspace/Testing') {
-            // Your pipeline steps go here
-        }
-    }
-}
 
     stage('checkout') {
         steps {

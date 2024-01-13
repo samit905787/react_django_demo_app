@@ -27,6 +27,7 @@ stages {
     stage('push to ACR') {
         steps{   
             script {
+		echo "Pushing Docker image: ${dockerImage}:${env.BUILD_ID}"    
                 docker.withRegistry( "http://${registryUrl}", registryCredential ) {
                 dockerImage.push()
                 }

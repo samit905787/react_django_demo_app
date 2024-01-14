@@ -5,8 +5,8 @@ pipeline {
         registryUrl = "testdatadaanrepo.azurecr.io"
         registryCredential = "ACR"
         dockerImage = 'react_django_demo_app'
-	    webAppResourceGroup = 'Rg-Amit'
-	    webAppName = 'testdatadaanapp'
+	webAppResourceGroup = 'Rg-Amit'
+	webAppName = 'testdatadaanapp'
     }
 stages {
 

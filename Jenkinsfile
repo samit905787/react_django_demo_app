@@ -7,9 +7,11 @@ pipeline {
         registryUrl = "reactdjangodemoimage.azurecr.io"
         registryCredential = "ACR"
         dockerImage = 'react_django_demo_app-web'
-	webAppResourceGroup = 'Rg-Amit'
-	webAppName = 'reactdjangodemoapp'
-				
+		webAppResourceGroup = 'Rg-Amit'
+		webAppName = 'reactdjangodemoapp'
+		
+
+		
     }
     
     stages {
@@ -33,10 +35,13 @@ pipeline {
         stage('Upload Image to ACR') {
            steps{   
                script {
-               docker.withRegistry( "http://${registryUrl}", registryCredential ) {
-               dockerImage.push()
-            }
-        }
+                 echo "Available credentials: ${Jenkins.instance.getDescriptor('com.cloudbees.plugins.credentials.SystemCredentialsProvider').getCredentials()}"
+                 echo "Using credential ID: ${registryCredential}"
+                 docker.withRegistry("http://${registryUrl}", registryCredential) {
+                 dockerImage.push()
+                }
+       }
+
       }
     }
     

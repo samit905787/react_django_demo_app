@@ -19,7 +19,7 @@ stages {
     stage ('build image') {
         steps {        
             script {
-                dockerImage = docker.build("${registryName}:${env.BUILD_ID}")
+                dockerImage = docker.build("${dockerImage}:${env.BUILD_ID}")
                 }      
             }
     }
@@ -27,8 +27,8 @@ stages {
     stage('push to ACR') {
         steps{   
             script {
-		echo "Pushing Docker image: ${registryName}:${env.BUILD_ID}"    
-                docker.withRegistry( "http://${registryUrl}", registryCredential ) {
+		echo "Pushing Docker image: ${dockerImage}:${env.BUILD_ID}"    
+                docker.withRegistry( "http://${registryUrl}", 'ACR' ) {
                 dockerImage.push()
                 }
             }

@@ -24,7 +24,7 @@ pipeline {
             steps {
                 
                 script {
-                    dockerImage = docker.build("${registryName}:${env.BUILD_ID}")
+                    dockerImage = docker.build("${dockerImage}:${env.BUILD_ID}")
                 }
             }
         }

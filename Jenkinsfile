@@ -28,10 +28,11 @@ pipeline {
         stage('Upload Image to ACR') {
             steps {
                 script {
-                    echo "Available credentials: ${Jenkins.instance.getDescriptor('com.cloudbees.plugins.credentials.SystemCredentialsProvider').getCredentials()}"
                     echo "Using credential ID: ${registryCredential}"
-                    docker.withRegistry("http://${registryUrl}", registryCredential) {
-                        dockerImage.push()
+                    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: registryCredential, usernameVariable: 'ACR_USERNAME', passwordVariable: 'ACR_PASSWORD']]) {
+                        docker.withRegistry("https://${registryUrl}", "ACR") {
+                            dockerImage.push()
+                        }
                     }
                 }
             }

@@ -15,7 +15,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']])
+                script {
+                    // Debugging: Print the current directory and list the files
+                    echo "Current directory: ${pwd()}"
+                    sh "ls -la"
+                    
+                    checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']])
+                }
             }
         }
 

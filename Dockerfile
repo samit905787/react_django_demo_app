@@ -1,6 +1,6 @@
 FROM python:3.9
 # Install Apache and Certbot for Apache
-RUN apt-get update && apt-get install -y
+RUN apt-get update && apt-get install apache2 -y
 WORKDIR app
 COPY . /app
 RUN pip install -r requirements.txt 

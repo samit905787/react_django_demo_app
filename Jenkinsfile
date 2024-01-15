@@ -1,5 +1,13 @@
 pipeline {
     agent { label "dev-server"}
+
+    environment {
+        webAppName = "Dockerserver"
+        webAppResourceGroup = "Rg-Amit"
+        dockerImage = "react_django_demo_app:latest"
+        registryCredential = "dockerHub"
+        registryName = "samit905787"
+    }
     
     stages {
         
@@ -30,7 +38,7 @@ pipeline {
                 }
             }
         }
-        stage("deploy"){
+         stage("deploy"){
             steps{
                 sh "docker-compose down && docker-compose up -d"
                 echo 'deployment ho gayi'

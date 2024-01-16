@@ -1,47 +1,59 @@
 pipeline {
-    agent { label "dev-server"}
+    agent any
 
     environment {
-        webAppName = "Dockerserver"
-        webAppResourceGroup = "Rg-Amit"
-        dockerImage = "react_django_demo_app:latest"
-        registryCredential = "dockerHub"
-        registryName = "samit905787"
+        // Define your deployment details
+        vmHost = 'deployvm'
+        vmUser = 'azureuser'
+        vmPassword = 'Welcome@12345'
+        appPath = '/home/azureuser/app'
     }
-    
+
     stages {
-        
-        stage("code"){
-            steps{
-                git url: "https://github.com/samit905787/react_django_demo_app.git", branch: "main"
-                echo 'bhaiyya code clone ho gaya'
+        stage('Checkout') {
+            steps {
+                // Checkout your source code from version control
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/samit905787/react_django_demo_app.git']])
             }
         }
-        stage("build and test"){
-            steps{
-                sh "docker build -t react_django_demo_app ."
-                echo 'code build bhi ho gaya'
-            }
-        }
-        stage("scan image"){
-            steps{
-                echo 'image scanning ho gayi'
-            }
-        }
-        stage("push"){
-            steps{
-                withCredentials([usernameColonPassword(credentialsId: 'DOCKER_REGISTRY_CREDS', variable: 'dockerHub'), string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass'), string(credentialsId: 'dockerHubUser', variable: 'dockerHubUser')]) {
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker tag react_django_demo_app:latest ${env.dockerHubUser}/react_django_demo_app:latest"
-                sh "docker push ${env.dockerHubUser}/react_django_demo_app:latest"
-                echo 'image push ho gaya'
+
+        stage('Build and Collect Artifacts') {
+            steps {
+                // Build your React and Django applications
+                script {
+                    sh 'npm install' // Adjust this based on your React app structure
+                    sh 'npm run build' // Adjust this based on your React app build script
+
+                    sh 'pip install -r requirements.txt' // Adjust this based on your Django app structure
+                    // You may need to run migrations and collect static files for Django
+
+                    // Collect artifacts to be deployed
+                    archiveArtifacts artifacts: '**/build/**', fingerprint: true
+                    archiveArtifacts artifacts: '**/dist/**', fingerprint: true
+                    archiveArtifacts artifacts: '**/requirements.txt', fingerprint: true
                 }
             }
         }
-         stage("deploy"){
-            steps{
-                sh "docker-compose down && docker-compose up -d"
-                echo 'deployment ho gayi'
+
+        stage('Deploy to VM') {
+            steps {
+                // Copy artifacts to VM
+                script {
+                    sshagent(['your-ssh-credentials-id']) {
+                        sh "scp -r -o StrictHostKeyChecking=no build dist requirements.txt ${vmUser}@${vmHost}:${appPath}"
+                    }
+                }
+            }
+        }
+
+        stage('Configure and Start App') {
+            steps {
+                // Configure and start your application on VM
+                script {
+                    sshagent(['your-ssh-credentials-id']) {
+                        sh "ssh -o StrictHostKeyChecking=no ${vmUser}@${vmHost} 'cd ${appPath} && npm install && python manage.py migrate && python manage.py runserver'"
+                    }
+                }
             }
         }
     }

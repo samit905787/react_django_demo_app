@@ -12,10 +12,12 @@ pipeline {
         stage("build and test"){
             steps{
                 // Get the short commit hash
-                def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                
-                // Build Docker image with version tag
-                sh "docker build -t react_django_demo_app:${commitHash} ."
+                script {
+                    def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    
+                    // Build Docker image with version tag
+                    sh "docker build -t react_django_demo_app:${commitHash} ."
+                }
                 echo 'code build bhi ho gaya'
             }
         }
@@ -27,9 +29,11 @@ pipeline {
         stage("push"){
             steps{
                 withCredentials([usernameColonPassword(credentialsId: 'DOCKER_REGISTRY_CREDS', variable: 'dockerHub'), string(credentialsId: 'dockerhubpass', variable: 'dockerHubPass'), string(credentialsId: 'dockerHubUser', variable: 'dockerHubUser')]) {
-                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                    sh "docker tag react_django_demo_app:${commitHash} ${env.dockerHubUser}/react_django_demo_app:${commitHash}"
-                    sh "docker push ${env.dockerHubUser}/react_django_demo_app:${commitHash}"
+                    script {
+                        sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
+                        sh "docker tag react_django_demo_app:${commitHash} ${env.dockerHubUser}/react_django_demo_app:${commitHash}"
+                        sh "docker push ${env.dockerHubUser}/react_django_demo_app:${commitHash}"
+                    }
                     echo 'image push ho gaya'
                 }
             }
